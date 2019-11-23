@@ -1,6 +1,7 @@
 package pl.booking.bookmyroom.user.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import pl.booking.bookmyroom.user.model.User;
 import pl.booking.bookmyroom.user.model.UserLogInRequest;
