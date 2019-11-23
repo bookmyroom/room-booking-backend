@@ -1,4 +1,4 @@
-package pl.booking.bookmyroom.User.Model;
+package pl.booking.bookmyroom.user.model;
 
 import lombok.Getter;
 

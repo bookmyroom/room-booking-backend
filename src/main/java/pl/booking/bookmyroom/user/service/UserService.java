@@ -1,17 +1,17 @@
-package pl.booking.bookmyroom.User.Service;
+package pl.booking.bookmyroom.user.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import pl.booking.bookmyroom.User.Model.User;
-import pl.booking.bookmyroom.User.Model.UserLogInRequest;
-import pl.booking.bookmyroom.User.Model.UserRegistrationRequest;
-import pl.booking.bookmyroom.User.Repository.UserRepository;
+import pl.booking.bookmyroom.user.model.User;
+import pl.booking.bookmyroom.user.model.UserLogInRequest;
+import pl.booking.bookmyroom.user.model.UserRegistrationRequest;
+import pl.booking.bookmyroom.user.repository.UserRepository;
 
 import java.util.List;
 
 @Service
 public class UserService {
-    private UserRepository repository;
+    private final UserRepository repository;
 
     @Autowired
     public UserService(UserRepository repository) {

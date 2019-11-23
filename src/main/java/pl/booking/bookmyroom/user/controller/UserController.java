@@ -1,11 +1,11 @@
-package pl.booking.bookmyroom.User.Controller;
+package pl.booking.bookmyroom.user.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import pl.booking.bookmyroom.User.Model.User;
-import pl.booking.bookmyroom.User.Model.UserLogInRequest;
-import pl.booking.bookmyroom.User.Model.UserRegistrationRequest;
-import pl.booking.bookmyroom.User.Service.UserService;
+import pl.booking.bookmyroom.user.model.User;
+import pl.booking.bookmyroom.user.model.UserLogInRequest;
+import pl.booking.bookmyroom.user.model.UserRegistrationRequest;
+import pl.booking.bookmyroom.user.service.UserService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/user")
 public class UserController {
-    private UserService userService;
+    private final UserService userService;
 
     @Autowired
     public UserController(UserService userService) {

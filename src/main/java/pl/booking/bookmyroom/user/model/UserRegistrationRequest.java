@@ -1,6 +1,5 @@
-package pl.booking.bookmyroom.User.Model;
+package pl.booking.bookmyroom.user.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import javax.validation.constraints.Email;
