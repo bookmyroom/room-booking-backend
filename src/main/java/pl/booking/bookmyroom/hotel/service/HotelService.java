@@ -16,10 +16,12 @@ import java.util.Optional;
 public class HotelService {
 
     private final HotelRepository hotelRepository;
+    private final RoomService roomService;
 
     @Autowired
-    public HotelService(HotelRepository hotelRepository) {
+    public HotelService(HotelRepository hotelRepository, RoomService roomService) {
         this.hotelRepository = hotelRepository;
+        this.roomService = roomService;
     }
 
     public void addHotel(CreateHotelRequest request) {
@@ -61,5 +63,9 @@ public class HotelService {
             }
             hotelRepository.save(hotelToEdit);
         }
+    }
+
+    public Integer getNumberOfRoomsByRoomTypeId(Integer id) {
+        return roomService.getNumberOfRoomsById(id);
     }
 }
