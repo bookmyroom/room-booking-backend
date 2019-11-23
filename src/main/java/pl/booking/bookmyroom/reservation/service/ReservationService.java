@@ -44,8 +44,7 @@ public class ReservationService {
         reservations = reservations.stream()
                 .filter(r -> r.getHotelsId().equals(hotelsId))
                 .filter(r -> r.getRoomId().equals(roomId))
-                .filter(r -> r.getReservationStart().equals(startDate))
-                .filter(r -> r.getReservationEnd().equals(endDate))
+                .filter(r -> r.isCollidingWith(startDate, endDate))
                 .collect(Collectors.toList());
         //TODO check if num of reservations >= roomCount of Room with roomId
         return true;
