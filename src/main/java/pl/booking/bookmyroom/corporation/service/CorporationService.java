@@ -19,27 +19,31 @@ public class CorporationService {
         this.corporationRepository = corporationRepository;
     }
 
-    public void addCorporation(CreateCorporationRequest request) {
-        Corporation corporation = new Corporation();
-        corporation.setName(request.getName());
-        corporation.setPassword(request.getPassword());
-        corporation.setEmail(request.getEmail());
-        corporationRepository.save(corporation);
+    public boolean addCorporation(CreateCorporationRequest request) {
+        if(getAllCorporations().stream().anyMatch(c -> c.getEmail().equals(request.getEmail()))) {
+            return false;
+        } else {
+            Corporation corporation = new Corporation();
+            corporation.setName(request.getName());
+            if(request.getPassword().equals(request.getRepeatedPassword())) {
+                corporation.setPassword(request.getPassword());
+            } else {
+                return false;
+            }
+            corporation.setEmail(request.getEmail());
+            corporationRepository.save(corporation);
+            return true;
+        }
     }
 
-    public String loginCorporation(LoginCorporationRequest request) {
-        Corporation corporationToLogin = getAllCorporations()
+    public boolean loginCorporation(LoginCorporationRequest request) {
+        return getAllCorporations()
                 .stream()
                 .filter(c -> c.getEmail().equals(request.getEmail()))
-                .findAny().get();
-        if(corporationToLogin.getPassword().equals(request.getPassword())) {
-            return "Zalogowano";
-        }
-        return "Błędny email lub hasło";
+                .anyMatch(c -> c.getPassword().equals(request.getPassword()));
     }
 
     public List<Corporation> getAllCorporations(){
         return corporationRepository.findAll();
     }
-
 }

@@ -8,6 +8,7 @@ import pl.booking.bookmyroom.corporation.model.CreateCorporationRequest;
 import pl.booking.bookmyroom.corporation.model.LoginCorporationRequest;
 import pl.booking.bookmyroom.corporation.service.CorporationService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -23,12 +24,12 @@ public class CorporationController {
 
     @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)
-    public void addCorporation(@RequestBody CreateCorporationRequest request) {
-        corporationService.addCorporation(request);
+    public boolean addCorporation(@RequestBody @Valid CreateCorporationRequest request) {
+        return corporationService.addCorporation(request);
     }
 
     @GetMapping("login")
-    public String loginCorporation(@RequestBody LoginCorporationRequest request){
+    public boolean loginCorporation(@RequestBody @Valid LoginCorporationRequest request){
         return corporationService.loginCorporation(request);
     }
 
@@ -36,5 +37,4 @@ public class CorporationController {
     public List<Corporation> getAllCorporations(){
         return corporationService.getAllCorporations();
     }
-
 }

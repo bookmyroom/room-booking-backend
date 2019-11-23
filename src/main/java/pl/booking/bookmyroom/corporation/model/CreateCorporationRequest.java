@@ -18,6 +18,9 @@ public class CreateCorporationRequest {
     private String password;
 
     @NotNull
+    private String repeatedPassword;
+
+    @NotNull
     @Email
     private String email;
 }
