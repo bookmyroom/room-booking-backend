@@ -19,7 +19,7 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private Date reservationStart, reservationEnd;
-    private Integer hotelsId, roomId, userId;
+    private Integer hotelsId, roomTypeId, userId;
 
     public boolean isCollidingWith(Date otherReservationStart, Date otherReservationEnd){
         if (this.reservationStart.before(otherReservationStart) && this.reservationEnd.after(otherReservationStart)){

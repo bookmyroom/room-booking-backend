@@ -26,12 +26,12 @@ public class ReservationService {
     }
 
     public boolean makeReservation(MakeReservationRequest request) {
-        if (hotelHasFreeRooms(request.getStartDate(), request.getEndDate(), request.getIdHotel(), request.getIdRoom())) {
+        if (hotelHasFreeRooms(request.getStartDate(), request.getEndDate(), request.getIdRoom())) {
             Reservation reservation = new Reservation();
             reservation.setReservationStart(request.getStartDate());
             reservation.setReservationEnd(request.getEndDate());
             reservation.setHotelsId(request.getIdHotel());
-            reservation.setRoomId(request.getIdRoom());
+            reservation.setRoomTypeId(request.getIdRoom());
             reservation.setUserId(request.getIdUser());
             repository.save(reservation);
             return true;
@@ -40,18 +40,12 @@ public class ReservationService {
         }
     }
 
-    private boolean hotelHasFreeRooms(Date startDate, Date endDate, Integer hotelsId, Integer roomId){
-        List<Reservation> reservations = repository.findAll();
-        reservations = reservations.stream()
-                .filter(r -> r.getHotelsId().equals(hotelsId))
-                .filter(r -> r.getRoomId().equals(roomId))
+    private boolean hotelHasFreeRooms(Date startDate, Date endDate, Integer roomId){
+        long numOfReservations = repository.findAllByRoomId(roomId).stream()
                 .filter(r -> r.isCollidingWith(startDate, endDate))
-                .collect(Collectors.toList());
-        if (reservations.size() >= hotelService.getNumberOfRoomsByRoomTypeId(roomId)){
-            return true;
-        } else {
-            return false;
-        }
+                .count();
+        long numOfRoomsInHotel = (long) hotelService.getNumberOfRoomsByRoomTypeId(roomId);
+        return numOfReservations >= numOfRoomsInHotel;
     }
 
     public boolean deleteReservation(DeleteReservationRequest request) {
@@ -67,12 +61,12 @@ public class ReservationService {
     public boolean editReservation(EditReservationRequest request) {
         Optional<Reservation> reservation = repository.findById(request.getReservationId());
         if (reservation.isPresent()){
-            if(hotelHasFreeRooms(request.getStartDate(), request.getEndDate(), request.getIdHotel(), request.getIdRoom())) {
+            if(hotelHasFreeRooms(request.getStartDate(), request.getEndDate(), request.getIdRoom())) {
                 Reservation r = reservation.get();
                 r.setReservationStart(request.getStartDate());
                 r.setReservationEnd(request.getEndDate());
                 r.setHotelsId(request.getIdHotel());
-                r.setRoomId(request.getIdRoom());
+                r.setRoomTypeId(request.getIdRoom());
                 repository.save(r);
                 return true;
             }
