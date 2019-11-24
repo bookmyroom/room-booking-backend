@@ -30,11 +30,13 @@ public class CorporationController {
     }
 
     @GetMapping("login")
+    @ResponseStatus(code = HttpStatus.OK)
     public boolean loginCorporation(@RequestBody @Valid LoginCorporationRequest request){
         return corporationService.loginCorporation(request);
     }
 
     @GetMapping
+    @ResponseStatus(code = HttpStatus.OK)
     public List<Corporation> getAllCorporations(){
         return corporationService.getAllCorporations();
     }

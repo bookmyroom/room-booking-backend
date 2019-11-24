@@ -23,17 +23,20 @@ public class UserController {
     }
 
     @PostMapping(value = "/register")
+    @ResponseStatus(code = HttpStatus.CREATED)
     public boolean registerNewUser (@RequestBody @Valid UserRegistrationRequest request){
         return userService.createNewUser(request);
     }
 
     @GetMapping(value = "/login")
+    @ResponseStatus(code = HttpStatus.OK)
     public boolean tryLogIn(@RequestBody@Valid UserLogInRequest request){
         return userService.tryLogIn(request);
     }
 
     //TODO remove this before release
     @GetMapping(value = "/all")
+    @ResponseStatus(code = HttpStatus.OK)
     public List<User> getAllUsers(){
         return userService.getAllUsers();
     }
