@@ -22,16 +22,18 @@ public class Reservation {
     private Integer hotelsId, roomId, userId;
 
     public boolean isCollidingWith(Date otherReservationStart, Date otherReservationEnd){
-        if (this.reservationStart.before(otherReservationStart) && this.reservationEnd.after(otherReservationEnd)){
+        if (this.reservationStart.before(otherReservationStart) && this.reservationEnd.after(otherReservationStart)){
             return true;
         }
-        if (this.reservationEnd.after(otherReservationEnd) && this.reservationStart.before(otherReservationStart)){
+        if (this.reservationStart.before(otherReservationEnd) && this.reservationEnd.after(otherReservationEnd)){
+            return true;
+        }
+        if (this.reservationStart.after(otherReservationStart) && this.reservationEnd.before(otherReservationEnd)){
             return true;
         }
         if (this.reservationStart.equals(otherReservationStart) || this.reservationEnd.equals(otherReservationEnd)){
             return true;
         }
-        //TODO one more condition
         return false;
     }
 }
