@@ -13,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/corporations")
+@CrossOrigin(value = "http://localhost:8000")
 public class CorporationController {
 
     private final CorporationService corporationService;

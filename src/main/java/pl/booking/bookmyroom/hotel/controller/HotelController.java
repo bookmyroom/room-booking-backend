@@ -13,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/hotels")
+@CrossOrigin(value = "http://localhost:8000")
 public class HotelController {
 
     private final HotelService hotelService;

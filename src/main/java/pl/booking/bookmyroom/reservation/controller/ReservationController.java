@@ -11,6 +11,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/reservation")
+@CrossOrigin(value = "http://localhost:8000")
 public class ReservationController {
     private final ReservationService service;
 
