@@ -3,10 +3,7 @@ package pl.booking.bookmyroom.hotel.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import pl.booking.bookmyroom.hotel.model.CreateHotelRequest;
-import pl.booking.bookmyroom.hotel.model.DeleteHotelRequest;
-import pl.booking.bookmyroom.hotel.model.EditHotelRequest;
-import pl.booking.bookmyroom.hotel.model.Hotel;
+import pl.booking.bookmyroom.hotel.model.*;
 import pl.booking.bookmyroom.hotel.service.HotelService;
 
 import javax.validation.Valid;
@@ -38,7 +35,7 @@ public class HotelController {
 
     @GetMapping
     @ResponseStatus(code = HttpStatus.OK)
-    public List<Hotel> getAllHotels() {
+    public List<GetHotelResponse> getAllHotels() {
         return hotelService.getAllHotels();
     }
 
