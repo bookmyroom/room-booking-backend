@@ -2,6 +2,7 @@ package pl.booking.bookmyroom.reservation.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pl.booking.bookmyroom.hotel.service.HotelService;
 import pl.booking.bookmyroom.reservation.model.DeleteReservationRequest;
 import pl.booking.bookmyroom.reservation.model.EditReservationRequest;
 import pl.booking.bookmyroom.reservation.model.MakeReservationRequest;
@@ -16,12 +17,12 @@ import java.util.stream.Collectors;
 @Service
 public class ReservationService {
     private final ReservationRepository repository;
-    //TODO private final HotelService hotelService;
+    private final HotelService hotelService;
 
     @Autowired
-    public ReservationService(ReservationRepository repository /*TODO HotelService hotelService*/) {
+    public ReservationService(ReservationRepository repository, HotelService hotelService) {
         this.repository = repository;
-        //TODO this.hotelService = hotelService;
+        this.hotelService = hotelService;
     }
 
     public boolean makeReservation(MakeReservationRequest request) {
@@ -46,8 +47,11 @@ public class ReservationService {
                 .filter(r -> r.getRoomId().equals(roomId))
                 .filter(r -> r.isCollidingWith(startDate, endDate))
                 .collect(Collectors.toList());
-        //TODO check if num of reservations >= roomCount of Room with roomId
-        return true;
+        if (reservations.size() >= hotelService.getNumberOfRoomsByRoomTypeId(roomId)){
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public boolean deleteReservation(DeleteReservationRequest request) {
