@@ -42,13 +42,19 @@ public class HotelController {
     @GetMapping("city/{city}")
     @ResponseStatus(code = HttpStatus.OK)
     public List<Hotel> findHotelByCity(@PathVariable String city) {
-        return hotelService.findHotelByCity(city);
+        return hotelService.getHotelsByCity(city);
     }
 
     @GetMapping("company-id/{corporationId}")
     @ResponseStatus(code = HttpStatus.OK)
     public List<Hotel> findHotelByCorporationId(@PathVariable Integer corporationId){
-        return hotelService.findHotelByCorporationId(corporationId);
+        return hotelService.getHotelsByCorporationId(corporationId);
+    }
+
+    @GetMapping("query")
+    @ResponseStatus(code = HttpStatus.OK)
+    public List<Hotel> findHotelsBySearchQuery(@RequestBody @Valid HotelSearchRequest request){
+        return hotelService.findHotelsMatchingQuery(request);
     }
 
     @PutMapping

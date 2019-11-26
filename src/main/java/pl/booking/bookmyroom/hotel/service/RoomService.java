@@ -3,13 +3,14 @@ package pl.booking.bookmyroom.hotel.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.booking.bookmyroom.hotel.model.AddRoomsToHotelRequest;
+import pl.booking.bookmyroom.hotel.model.RoomStandard;
 import pl.booking.bookmyroom.hotel.model.RoomType;
 import pl.booking.bookmyroom.hotel.repository.RoomRepository;
 
 import java.util.List;
 
 @Service
-public class RoomService {
+class RoomService {
 
     private final RoomRepository roomRepository;
 
@@ -38,5 +39,24 @@ public class RoomService {
 
     public Integer getNumberOfRoomsById(Integer id) {
         return roomRepository.findById(id).get().getNumberOfRooms();
+    }
+
+    public boolean anyRoomsMatchQuery(Integer hotelsId, Integer numberOfBeds){
+        List<RoomType> hotelRooms = roomRepository.findByHotelsId(hotelsId);
+        return hotelRooms.stream()
+                .anyMatch(r -> r.getNumberOfBeds().equals(numberOfBeds));
+    }
+
+    public  boolean anyRoomsMatchQuery(Integer hotelsId, RoomStandard standard){
+        List<RoomType> hotelRooms = roomRepository.findByHotelsId(hotelsId);
+        return hotelRooms.stream()
+                .anyMatch(r -> r.getStandard().equals(standard));
+    }
+
+    public boolean anyRoomsMatchQuery(Integer hotelsId, Float priceMin, Float priceMax){
+        List<RoomType> hotelRooms = roomRepository.findByHotelsId(hotelsId);
+        return hotelRooms.stream()
+                .anyMatch(r -> r.getPrice() >= priceMin &&
+                        r.getPrice() <= priceMax);
     }
 }

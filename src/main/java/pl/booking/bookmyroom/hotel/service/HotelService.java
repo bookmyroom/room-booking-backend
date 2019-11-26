@@ -55,12 +55,50 @@ public class HotelService {
         return response;
     }
 
-    public List<Hotel> findHotelByCity(String city){
+    public List<Hotel> getHotelsByCity(String city){
         return hotelRepository.findByCity(city);
     }
 
-    public List<Hotel> findHotelByCorporationId(Integer corporationId) {
+    public List<Hotel> getHotelsByCorporationId(Integer corporationId) {
         return hotelRepository.findHotelByCorporationId(corporationId);
+    }
+
+    public List<Hotel> getHotelsByStandard(Integer standard) {
+        return hotelRepository.findByStandard(standard);
+    }
+
+    public List<Hotel> getHotelsByStandardAndCity(Integer standard, String city){
+        return hotelRepository.findByStandardAndCity(standard, city);
+    }
+
+    public List<Hotel> findHotelsMatchingQuery(HotelSearchRequest request){
+        List<Hotel> searchResult = getHotelsByCity(request.getCity());
+
+        if(request.getHotelStandard() != null){
+            searchResult = getHotelsByStandardAndCity(request.getHotelStandard(), request.getCity());
+        }
+
+        if(request.getRoomStandard() != null){
+            searchResult = searchResult.stream()
+                    .filter(h -> roomService.anyRoomsMatchQuery(h.getId(), request.getRoomStandard()))
+                    .collect(Collectors.toList());
+        }
+
+        if(request.getPriceMin() != null && request.getPriceMax() != null){
+            searchResult = searchResult.stream()
+                    .filter(h -> roomService.anyRoomsMatchQuery(h.getId(),
+                            request.getPriceMin(),
+                            request.getPriceMax()))
+                    .collect(Collectors.toList());
+        }
+
+        if(request.getNumberOfBeds() != null){
+            searchResult = searchResult.stream()
+                    .filter(h -> roomService.anyRoomsMatchQuery(h.getId(), request.getNumberOfBeds()))
+                    .collect(Collectors.toList());
+        }
+
+        return searchResult;
     }
 
     public void editHotel(EditHotelRequest request, Integer id) {
