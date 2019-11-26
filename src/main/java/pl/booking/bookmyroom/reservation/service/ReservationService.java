@@ -45,7 +45,7 @@ public class ReservationService {
                 .filter(r -> r.isCollidingWith(startDate, endDate))
                 .count();
         long numOfRoomsInHotel = (long) hotelService.getNumberOfRoomsByRoomTypeId(roomId);
-        return numOfReservations >= numOfRoomsInHotel;
+        return numOfReservations <= numOfRoomsInHotel;
     }
 
     public boolean deleteReservation(DeleteReservationRequest request) {
