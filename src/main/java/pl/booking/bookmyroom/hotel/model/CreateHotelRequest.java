@@ -28,4 +28,7 @@ public class CreateHotelRequest {
 
     @NotNull
     private Integer corporationId;
+
+    @NotNull
+    private AddRoomsToHotelRequest[] roomsToHotelRequests;
 }

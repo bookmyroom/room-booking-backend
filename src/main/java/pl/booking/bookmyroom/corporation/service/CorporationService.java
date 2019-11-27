@@ -20,7 +20,7 @@ public class CorporationService {
     }
 
     public boolean addCorporation(CreateCorporationRequest request) {
-        if(getAllCorporations().stream().anyMatch(c -> c.getEmail().equals(request.getEmail()))) {
+        if(!getCorporationByEmail(request.getEmail()).isEmpty()) {
             return false;
         } else {
             Corporation corporation = new Corporation();
@@ -37,13 +37,15 @@ public class CorporationService {
     }
 
     public boolean loginCorporation(LoginCorporationRequest request) {
-        return getAllCorporations()
-                .stream()
-                .filter(c -> c.getEmail().equals(request.getEmail()))
+        return getCorporationByEmail(request.getEmail()).stream()
                 .anyMatch(c -> c.getPassword().equals(request.getPassword()));
     }
 
     public List<Corporation> getAllCorporations(){
         return corporationRepository.findAll();
+    }
+
+    public List<Corporation> getCorporationByEmail(String email){
+        return corporationRepository.findCorporationByEmail(email);
     }
 }
