@@ -8,6 +8,8 @@ import pl.booking.bookmyroom.hotel.model.RoomType;
 import pl.booking.bookmyroom.hotel.repository.RoomRepository;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 class RoomService {
@@ -19,7 +21,7 @@ class RoomService {
         this.roomRepository = roomRepository;
     }
 
-    public void addRoomsToHotel(AddRoomsToHotelRequest request, Integer hotelsId){
+    void addRoomsToHotel(AddRoomsToHotelRequest request, Integer hotelsId){
         RoomType roomType = new RoomType();
         roomType.setHotelId(hotelsId);
         roomType.setNumberOfBeds(request.getNumOfBeds());
@@ -29,34 +31,46 @@ class RoomService {
         roomRepository.save(roomType);
     }
 
-    public List<RoomType> getAllRoomTypes(){
+    List<RoomType> getAllRoomTypes(){
         return roomRepository.findAll();
     }
 
-    public RoomType getRoomTypeById(Integer id) {
+    RoomType getRoomTypeById(Integer id) {
         return roomRepository.findById(id).get();
     }
 
-    public Integer getNumberOfRoomsById(Integer id) {
+    Integer getNumberOfRoomsById(Integer id) {
         return roomRepository.findById(id).get().getNumberOfRooms();
     }
 
-    public boolean anyRoomsMatchQuery(Integer hotelsId, Integer numberOfBeds){
+    boolean anyRoomsMatchQuery(Integer hotelsId,
+                                      Optional<Integer> numOfBeds,
+                                      Optional<RoomStandard> standard,
+                                      Optional<Float> priceMin,
+                                      Optional<Float> priceMax){
         List<RoomType> hotelRooms = roomRepository.findByHotelsId(hotelsId);
-        return hotelRooms.stream()
-                .anyMatch(r -> r.getNumberOfBeds().equals(numberOfBeds));
+        hotelRooms = numOfBeds.isPresent() ? getRoomsMatchingNumberOfBeds(hotelRooms, numOfBeds.get()) : hotelRooms;
+        hotelRooms = standard.isPresent() ? getRoomsMatchingStandard(hotelRooms, standard.get()) : hotelRooms;
+        hotelRooms = priceMin.isPresent() && priceMax.isPresent() ? getRoomsMatchingPriceRange(hotelRooms, priceMin.get(), priceMax.get()) : hotelRooms;
+        return !hotelRooms.isEmpty();
     }
 
-    public  boolean anyRoomsMatchQuery(Integer hotelsId, RoomStandard standard){
-        List<RoomType> hotelRooms = roomRepository.findByHotelsId(hotelsId);
+    private List<RoomType> getRoomsMatchingNumberOfBeds(List<RoomType> hotelRooms, Integer numberOfBeds){
         return hotelRooms.stream()
-                .anyMatch(r -> r.getStandard().equals(standard));
+                .filter(r -> r.getNumberOfBeds().equals(numberOfBeds))
+                .collect(Collectors.toList());
     }
 
-    public boolean anyRoomsMatchQuery(Integer hotelsId, Float priceMin, Float priceMax){
-        List<RoomType> hotelRooms = roomRepository.findByHotelsId(hotelsId);
+    private   List<RoomType> getRoomsMatchingStandard(List<RoomType> hotelRooms, RoomStandard standard){
         return hotelRooms.stream()
-                .anyMatch(r -> r.getPrice() >= priceMin &&
-                        r.getPrice() <= priceMax);
+                .filter(r -> r.getStandard().equals(standard))
+                .collect(Collectors.toList());
+    }
+
+    private List<RoomType> getRoomsMatchingPriceRange(List<RoomType> hotelRooms, Float priceMin, Float priceMax){
+        return hotelRooms.stream()
+                .filter(r -> r.getPrice() >= priceMin &&
+                        r.getPrice() <= priceMax)
+                .collect(Collectors.toList());
     }
 }

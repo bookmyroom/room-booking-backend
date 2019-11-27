@@ -78,25 +78,13 @@ public class HotelService {
             searchResult = getHotelsByStandardAndCity(request.getHotelStandard(), request.getCity());
         }
 
-        if(request.getRoomStandard() != null){
-            searchResult = searchResult.stream()
-                    .filter(h -> roomService.anyRoomsMatchQuery(h.getId(), request.getRoomStandard()))
-                    .collect(Collectors.toList());
-        }
-
-        if(request.getPriceMin() != null && request.getPriceMax() != null){
-            searchResult = searchResult.stream()
-                    .filter(h -> roomService.anyRoomsMatchQuery(h.getId(),
-                            request.getPriceMin(),
-                            request.getPriceMax()))
-                    .collect(Collectors.toList());
-        }
-
-        if(request.getNumberOfBeds() != null){
-            searchResult = searchResult.stream()
-                    .filter(h -> roomService.anyRoomsMatchQuery(h.getId(), request.getNumberOfBeds()))
-                    .collect(Collectors.toList());
-        }
+        searchResult = searchResult.stream()
+                .filter(h -> roomService.anyRoomsMatchQuery(h.getId(),
+                        Optional.of(request.getNumberOfBeds()),
+                        Optional.of(request.getRoomStandard()),
+                        Optional.of(request.getPriceMin()),
+                        Optional.of(request.getPriceMax())))
+                .collect(Collectors.toList());
 
         return searchResult;
     }
