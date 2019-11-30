@@ -35,6 +35,10 @@ class RoomService {
         return roomRepository.findAll();
     }
 
+    List<RoomType> getRoomTypesByHotelsId(Integer hotelsId){
+        return roomRepository.findByHotelsId(hotelsId);
+    }
+
     RoomType getRoomTypeById(Integer id) {
         return roomRepository.findById(id).get();
     }
