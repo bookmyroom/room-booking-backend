@@ -30,7 +30,6 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         else
             return new ResponseEntity<>(HttpStatus.CREATED);
-        //return userService.createNewUser(request);
     }
 
     @GetMapping(value = "/login")
