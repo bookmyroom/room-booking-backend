@@ -3,10 +3,7 @@ package pl.booking.bookmyroom.reservation.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.booking.bookmyroom.hotel.service.HotelService;
-import pl.booking.bookmyroom.reservation.model.DeleteReservationRequest;
-import pl.booking.bookmyroom.reservation.model.EditReservationRequest;
-import pl.booking.bookmyroom.reservation.model.MakeReservationRequest;
-import pl.booking.bookmyroom.reservation.model.Reservation;
+import pl.booking.bookmyroom.reservation.model.*;
 import pl.booking.bookmyroom.reservation.repository.ReservationRepository;
 
 import java.util.Date;
@@ -56,6 +53,10 @@ public class ReservationService {
         } else {
             return false;
         }
+    }
+
+    public List<Reservation> getUserReservations(GetUserReservationsRequest request){
+        return repository.findAllByUserId(request.getUserId());
     }
 
     public boolean editReservation(EditReservationRequest request) {
