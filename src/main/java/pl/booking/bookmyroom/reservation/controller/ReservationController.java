@@ -2,6 +2,7 @@ package pl.booking.bookmyroom.reservation.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.booking.bookmyroom.reservation.model.*;
 import pl.booking.bookmyroom.reservation.service.ReservationService;
@@ -22,8 +23,11 @@ public class ReservationController {
 
     @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)
-    public boolean makeNewReservation(@RequestBody @Valid MakeReservationRequest request){
-        return service.makeReservation(request);
+    public ResponseEntity<String> makeNewReservation(@RequestBody @Valid MakeReservationRequest request){
+        if(!service.makeReservation(request))
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        else
+            return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping

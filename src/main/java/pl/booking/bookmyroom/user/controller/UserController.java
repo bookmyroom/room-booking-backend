@@ -2,6 +2,7 @@ package pl.booking.bookmyroom.user.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.booking.bookmyroom.user.model.User;
 import pl.booking.bookmyroom.user.model.UserLogInRequest;
@@ -13,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/user")
-@CrossOrigin(value = "http://localhost:8000")
+@CrossOrigin
 public class UserController {
     private final UserService userService;
 
@@ -24,8 +25,11 @@ public class UserController {
 
     @PostMapping(value = "/register")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public boolean registerNewUser (@RequestBody @Valid UserRegistrationRequest request){
-        return userService.createNewUser(request);
+    public ResponseEntity<String> registerNewUser (@RequestBody @Valid UserRegistrationRequest request){
+        if(!userService.createNewUser(request))
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        else
+            return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @GetMapping(value = "/login")

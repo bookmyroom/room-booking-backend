@@ -2,6 +2,7 @@ package pl.booking.bookmyroom.corporation.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.booking.bookmyroom.corporation.model.Corporation;
 import pl.booking.bookmyroom.corporation.model.CreateCorporationRequest;
@@ -23,10 +24,13 @@ public class CorporationController {
         this.corporationService = corporationService;
     }
 
-    @PostMapping
+    @PostMapping(value = "/register")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public boolean addCorporation(@RequestBody @Valid CreateCorporationRequest request) {
-        return corporationService.addCorporation(request);
+    public ResponseEntity<String> addCorporation(@RequestBody @Valid CreateCorporationRequest request) {
+        if(!corporationService.addCorporation(request))
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        else
+            return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("login")
