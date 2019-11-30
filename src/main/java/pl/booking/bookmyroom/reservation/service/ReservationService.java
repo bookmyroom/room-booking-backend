@@ -55,8 +55,8 @@ public class ReservationService {
         }
     }
 
-    public List<Reservation> getUserReservations(GetUserReservationsRequest request){
-        return repository.findAllByUserId(request.getUserId());
+    public List<Reservation> getUserReservations(Integer userId){
+        return repository.findAllByUserId(userId);
     }
 
     public boolean editReservation(EditReservationRequest request) {

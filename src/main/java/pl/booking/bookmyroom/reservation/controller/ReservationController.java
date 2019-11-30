@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/reservation")
-@CrossOrigin(value = "http://localhost:8000")
+@CrossOrigin
 public class ReservationController {
     private final ReservationService service;
 
@@ -44,7 +44,7 @@ public class ReservationController {
 
     @GetMapping
     @ResponseStatus(code = HttpStatus.OK)
-    public List<Reservation> getReservationsByUserId(@RequestBody @Valid GetUserReservationsRequest request){
-        return service.getUserReservations(request);
+    public List<Reservation> getReservationsByUserId(@RequestParam @Valid Integer userId){
+        return service.getUserReservations(userId);
     }
 }
