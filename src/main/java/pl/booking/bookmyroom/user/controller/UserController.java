@@ -32,10 +32,13 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @GetMapping(value = "/login")
+    @PostMapping(value = "/login")
     @ResponseStatus(code = HttpStatus.OK)
-    public boolean tryLogIn(@RequestBody@Valid UserLogInRequest request){
-        return userService.tryLogIn(request);
+    public ResponseEntity<String> tryLogIn(@RequestBody@Valid UserLogInRequest request){
+        if(!userService.tryLogIn(request))
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        else
+            return new ResponseEntity<>(HttpStatus.OK);
     }
 
     //TODO remove this before release
