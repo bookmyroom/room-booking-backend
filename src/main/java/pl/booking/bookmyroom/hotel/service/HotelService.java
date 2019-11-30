@@ -63,19 +63,21 @@ public class HotelService {
         return hotelRepository.findHotelByCorporationId(corporationId);
     }
 
-    public List<Hotel> getHotelsByStandard(Integer standard) {
-        return hotelRepository.findByStandard(standard);
-    }
+//    public List<Hotel> getHotelsByStandard(Integer standard) {
+//        return hotelRepository.findByStandard(standard);
+//    }
 
-    public List<Hotel> getHotelsByStandardAndCity(Integer standard, String city){
+    private List<Hotel> getHotelsByStandardAndCity(Integer standard, String city){
         return hotelRepository.findByStandardAndCity(standard, city);
     }
 
     public List<Hotel> findHotelsMatchingQuery(HotelSearchRequest request){
-        List<Hotel> searchResult = getHotelsByCity(request.getCity());
+        List<Hotel> searchResult;
 
         if(request.getHotelStandard() != null){
             searchResult = getHotelsByStandardAndCity(request.getHotelStandard(), request.getCity());
+        } else {
+            searchResult = getHotelsByCity(request.getCity());
         }
 
         searchResult = searchResult.stream()
