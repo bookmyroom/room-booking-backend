@@ -33,10 +33,13 @@ public class CorporationController {
             return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("login")
+    @PostMapping("login")
     @ResponseStatus(code = HttpStatus.OK)
-    public boolean loginCorporation(@RequestBody @Valid LoginCorporationRequest request){
-        return corporationService.loginCorporation(request);
+    public ResponseEntity<String> loginCorporation(@RequestBody @Valid LoginCorporationRequest request){
+        if(!corporationService.loginCorporation(request))
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        else
+            return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping
