@@ -45,8 +45,8 @@ public class ReservationService {
         return numOfReservations <= numOfRoomsInHotel;
     }
 
-    public boolean deleteReservation(DeleteReservationRequest request) {
-        Optional<Reservation> reservation = repository.findById(request.getReservationId());
+    public boolean deleteReservation(Integer reservationId) {
+        Optional<Reservation> reservation = repository.findById(reservationId);
         if(reservation.isPresent()){
             repository.delete(reservation.get());
             return true;

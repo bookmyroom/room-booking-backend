@@ -31,10 +31,13 @@ public class ReservationController {
     }
 
     @DeleteMapping
-    @ResponseStatus(code = HttpStatus.OK)
-    public boolean deleteReservation(@RequestBody @Valid DeleteReservationRequest request){
-        return service.deleteReservation(request);
+    public ResponseEntity<String> deleteReservation(@RequestParam @Valid Integer reservationId){
+        if(!service.deleteReservation(reservationId))
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        else
+            return new ResponseEntity<>(HttpStatus.OK);
     }
+
 
     @PutMapping
     @ResponseStatus(code = HttpStatus.OK)
