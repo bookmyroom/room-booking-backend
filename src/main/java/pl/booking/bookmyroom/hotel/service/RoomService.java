@@ -6,7 +6,9 @@ import pl.booking.bookmyroom.hotel.model.AddRoomsToHotelRequest;
 import pl.booking.bookmyroom.hotel.model.RoomStandard;
 import pl.booking.bookmyroom.hotel.model.RoomType;
 import pl.booking.bookmyroom.hotel.repository.RoomRepository;
+import pl.booking.bookmyroom.reservation.service.ReservationService;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -15,10 +17,12 @@ import java.util.stream.Collectors;
 class RoomService {
 
     private final RoomRepository roomRepository;
+    private final ReservationService reservationService;
 
     @Autowired
-    public RoomService(RoomRepository roomRepository) {
+    public RoomService(RoomRepository roomRepository, ReservationService reservationService) {
         this.roomRepository = roomRepository;
+        this.reservationService = reservationService;
     }
 
     void addRoomsToHotel(AddRoomsToHotelRequest request, Integer hotelsId){
@@ -48,14 +52,17 @@ class RoomService {
     }
 
     boolean anyRoomsMatchQuery(Integer hotelsId,
-                                      Optional<Integer> numOfBeds,
-                                      Optional<RoomStandard> standard,
-                                      Optional<Float> priceMin,
-                                      Optional<Float> priceMax){
+                               Optional<Integer> numOfBeds,
+                               Optional<RoomStandard> standard,
+                               Optional<Float> priceMin,
+                               Optional<Float> priceMax,
+                               Optional<Date> start,
+                               Optional<Date> end){
         List<RoomType> hotelRooms = roomRepository.findByHotelsId(hotelsId);
         hotelRooms = numOfBeds.isPresent() ? getRoomsMatchingNumberOfBeds(hotelRooms, numOfBeds.get()) : hotelRooms;
         hotelRooms = standard.isPresent() ? getRoomsMatchingStandard(hotelRooms, standard.get()) : hotelRooms;
         hotelRooms = priceMin.isPresent() && priceMax.isPresent() ? getRoomsMatchingPriceRange(hotelRooms, priceMin.get(), priceMax.get()) : hotelRooms;
+        hotelRooms = start.isPresent() && end.isPresent() ? getRoomsMatchingDateRange(hotelRooms, start.get(), end.get()) : hotelRooms;
         return !hotelRooms.isEmpty();
     }
 
@@ -75,6 +82,12 @@ class RoomService {
         return hotelRooms.stream()
                 .filter(r -> r.getPrice() >= priceMin &&
                         r.getPrice() <= priceMax)
+                .collect(Collectors.toList());
+    }
+
+    private List<RoomType> getRoomsMatchingDateRange(List<RoomType> hotelRooms, Date start, Date end){
+        return hotelRooms.stream()
+                .filter(r -> reservationService.hotelHasFreeRooms(start, end, r.getId()))
                 .collect(Collectors.toList());
     }
 }
