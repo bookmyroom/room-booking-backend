@@ -1,6 +1,7 @@
 package pl.booking.bookmyroom.hotel.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import pl.booking.bookmyroom.hotel.model.AddRoomsToHotelRequest;
 import pl.booking.bookmyroom.hotel.model.RoomStandard;
@@ -20,7 +21,7 @@ class RoomService {
     private final ReservationService reservationService;
 
     @Autowired
-    public RoomService(RoomRepository roomRepository, ReservationService reservationService) {
+    public RoomService(RoomRepository roomRepository, @Lazy ReservationService reservationService) {
         this.roomRepository = roomRepository;
         this.reservationService = reservationService;
     }
