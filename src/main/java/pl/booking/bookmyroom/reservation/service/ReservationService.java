@@ -43,7 +43,7 @@ public class ReservationService {
         }
     }
 
-    private boolean hotelHasFreeRooms(Date startDate, Date endDate, Integer roomId){
+    public boolean hotelHasFreeRooms(Date startDate, Date endDate, Integer roomId){
         long numOfReservations = repository.findAllByRoomId(roomId).stream()
                 .filter(r -> r.isCollidingWith(startDate, endDate))
                 .count();

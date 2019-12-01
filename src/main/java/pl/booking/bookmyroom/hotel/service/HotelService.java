@@ -85,7 +85,9 @@ public class HotelService {
                         Optional.of(request.getNumberOfBeds()),
                         Optional.of(request.getRoomStandard()),
                         Optional.of(request.getPriceMin()),
-                        Optional.of(request.getPriceMax())))
+                        Optional.of(request.getPriceMax()),
+                        Optional.of(request.getStart()),
+                        Optional.of(request.getEnd())))
                 .collect(Collectors.toList());
 
         return searchResult;
