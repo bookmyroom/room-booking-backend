@@ -1,5 +1,6 @@
 package pl.booking.bookmyroom.reservation.controller;
 
+import jdk.nashorn.internal.objects.annotations.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,5 +50,26 @@ public class ReservationController {
     @ResponseStatus(code = HttpStatus.OK)
     public List<Reservation> getReservationsByUserId(@RequestParam @Valid Integer userId){
         return service.getUserReservations(userId);
+    }
+
+    @GetMapping(value = "/hotel")
+    @ResponseStatus(code = HttpStatus.OK)
+    public List<Reservation> getReservationsByHotelsId(@RequestParam @Valid Integer hotelsId){
+        return service.getHotelReservation(hotelsId);
+    }
+
+    @GetMapping(value = "/corporation")
+    @ResponseStatus(code = HttpStatus.OK)
+    public List<Reservation> getReservationsByCorporationId(@RequestParam @Valid Integer corporationId){
+        return service.getCorporationReservations(corporationId);
+    }
+
+    @PutMapping(value = "/status")
+    public ResponseEntity<String> changeReservationStatus(@RequestBody @Valid ChangeStatusRequest request){
+        if(service.changeReservationStatus(request)){
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 }
