@@ -8,6 +8,7 @@ import pl.booking.bookmyroom.reservation.repository.ReservationRepository;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -64,6 +65,17 @@ public class ReservationService {
         return repository.findAllByUserId(userId);
     }
 
+    public List<Reservation> getHotelReservation(Integer hotelsId){
+        return repository.findAllByHotelsId(hotelsId);
+    }
+
+    public List<Reservation> getCorporationReservations(Integer corporationId){
+        List<Reservation> reservations = new ArrayList<>();
+        hotelService.getHotelsByCorporationId(corporationId)
+                .forEach(h -> reservations.addAll(getHotelReservation(h.getId())));
+        return reservations;
+    }
+
     public boolean editReservation(EditReservationRequest request) {
         Optional<Reservation> reservation = repository.findById(request.getReservationId());
         if (reservation.isPresent()){
@@ -85,6 +97,7 @@ public class ReservationService {
         if (reservation.isPresent()){
             Reservation r = reservation.get();
             r.setStatus(request.getStatus());
+            repository.save(r);
             return true;
         }
         return false;
