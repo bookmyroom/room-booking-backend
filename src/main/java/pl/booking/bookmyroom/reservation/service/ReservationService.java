@@ -6,9 +6,12 @@ import pl.booking.bookmyroom.hotel.service.HotelService;
 import pl.booking.bookmyroom.reservation.model.*;
 import pl.booking.bookmyroom.reservation.repository.ReservationRepository;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,6 +33,8 @@ public class ReservationService {
             reservation.setHotelsId(request.getIdHotel());
             reservation.setRoomTypeId(request.getIdRoom());
             reservation.setUserId(request.getIdUser());
+            reservation.setFullReservationPrice(hotelService.getRoomPriceByRoomTypeId(request.getIdRoom())*calcNumOfDays(request.getStartDate(), request.getEndDate()));
+            reservation.setStatus(ReservationStatus.PENDING);
             repository.save(reservation);
             return true;
         } else {
@@ -73,5 +78,21 @@ public class ReservationService {
             }
         }
         return false;
+    }
+
+    public boolean changeReservationStatus(ChangeStatusRequest request){
+        Optional<Reservation> reservation = repository.findById(request.getReservationId());
+        if (reservation.isPresent()){
+            Reservation r = reservation.get();
+            r.setStatus(request.getStatus());
+            return true;
+        }
+        return false;
+    }
+
+    private Integer calcNumOfDays(Date startDate, Date endDate){
+        long diffInMilis = Math.abs(endDate.getTime() - startDate.getTime());
+        long numOfDays = TimeUnit.DAYS.convert(diffInMilis, TimeUnit.MILLISECONDS);
+        return (int) numOfDays;
     }
 }
