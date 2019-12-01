@@ -9,6 +9,7 @@ import pl.booking.bookmyroom.user.model.UserLogInRequest;
 import pl.booking.bookmyroom.user.model.UserRegistrationRequest;
 import pl.booking.bookmyroom.user.service.UserService;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -17,6 +18,7 @@ import java.util.List;
 @CrossOrigin
 public class UserController {
     private final UserService userService;
+    private String sessionId = "";
 
     @Autowired
     public UserController(UserService userService) {
@@ -34,11 +36,14 @@ public class UserController {
 
     @PostMapping(value = "/login")
     @ResponseStatus(code = HttpStatus.OK)
-    public ResponseEntity<String> tryLogIn(@RequestBody@Valid UserLogInRequest request){
+    public ResponseEntity<String> tryLogIn(@RequestBody@Valid UserLogInRequest request, HttpSession session){
+        sessionId = session.getId();
         if(!userService.tryLogIn(request))
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        else
+        else {
+            userService.addSessionId(request.getEmail(), sessionId);
             return new ResponseEntity<>(HttpStatus.OK);
+        }
     }
 
     //TODO remove this before release

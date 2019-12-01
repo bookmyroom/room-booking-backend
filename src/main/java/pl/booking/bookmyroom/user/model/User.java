@@ -9,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.Email;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -21,4 +22,5 @@ public class User {
     @Email
     private String email;
     private String password;
+    private String sessionId;
 }

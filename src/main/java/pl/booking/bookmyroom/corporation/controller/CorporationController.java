@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/corporations")
-@CrossOrigin(value = "http://localhost:8000")
+@CrossOrigin
 public class CorporationController {
 
     private final CorporationService corporationService;
@@ -33,10 +33,18 @@ public class CorporationController {
             return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("login")
+    @PostMapping(value = "/login")
     @ResponseStatus(code = HttpStatus.OK)
     public ResponseEntity<String> loginCorporation(@RequestBody @Valid LoginCorporationRequest request){
         if(!corporationService.loginCorporation(request))
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        else
+            return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/admin/login")
+    public ResponseEntity<String> loginAdminCorp(@RequestBody @Valid LoginCorporationRequest request){
+        if(!corporationService.loginAdminCorp(request))
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         else
             return new ResponseEntity<>(HttpStatus.OK);

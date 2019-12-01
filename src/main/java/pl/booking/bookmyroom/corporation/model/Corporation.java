@@ -21,6 +21,8 @@ public class Corporation {
 
     private String password;
 
+    private String adminPassword;
+
     @Email
     private String email;
 }

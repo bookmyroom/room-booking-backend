@@ -7,6 +7,8 @@ import pl.booking.bookmyroom.user.model.UserLogInRequest;
 import pl.booking.bookmyroom.user.model.UserRegistrationRequest;
 import pl.booking.bookmyroom.user.repository.UserRepository;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -42,5 +44,12 @@ public class UserService {
 
     public List<User> getAllUsers() {
         return repository.findAll();
+    }
+
+    public void addSessionId(String email, String sessionId) {
+        repository.findAll()
+                .stream()
+                .filter(u -> u.getEmail().equals(email))
+                .forEach(u -> u.setSessionId(sessionId));
     }
 }
