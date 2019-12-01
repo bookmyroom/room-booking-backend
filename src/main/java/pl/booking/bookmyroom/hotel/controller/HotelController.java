@@ -1,12 +1,17 @@
 package pl.booking.bookmyroom.hotel.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import pl.booking.bookmyroom.hotel.model.*;
 import pl.booking.bookmyroom.hotel.service.HotelService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -53,8 +58,15 @@ public class HotelController {
 
     @GetMapping("query")
     @ResponseStatus(code = HttpStatus.OK)
-    public List<Hotel> findHotelsBySearchQuery(@RequestBody @Valid HotelSearchRequest request){
-        return hotelService.findHotelsMatchingQuery(request);
+    public List<Hotel> findHotelsBySearchQuery(@RequestParam String city,
+                                               @RequestParam(required = false) @Valid @Min(1) @Max(5) Integer hotelStandard,
+                                               @RequestParam(required = false) Float priceMin,
+                                               @RequestParam(required = false) Float priceMax,
+                                               @RequestParam(required = false) Integer numberOfBeds,
+                                               @RequestParam(required = false) RoomStandard roomStandard,
+                                               @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") Date start,
+                                               @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") Date end){
+        return hotelService.findHotelsMatchingQuery(city, hotelStandard, priceMin, priceMax, numberOfBeds, roomStandard, start, end);
     }
 
     @PutMapping
