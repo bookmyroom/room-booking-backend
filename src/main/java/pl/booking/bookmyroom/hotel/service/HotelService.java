@@ -108,4 +108,8 @@ public class HotelService {
     public Integer getNumberOfRoomsByRoomTypeId(Integer id) {
         return roomService.getNumberOfRoomsById(id);
     }
+
+    public Float getRoomPriceByRoomTypeId(Integer id) {
+        return roomService.getRoomTypeById(id).getPrice();
+    }
 }

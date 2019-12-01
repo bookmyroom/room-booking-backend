@@ -3,6 +3,7 @@ package pl.booking.bookmyroom.hotel.model;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
 
@@ -30,5 +31,6 @@ public class CreateHotelRequest {
     private Integer corporationId;
 
     @NotNull
+    @Valid
     private AddRoomsToHotelRequest[] roomsToHotelRequests;
 }
