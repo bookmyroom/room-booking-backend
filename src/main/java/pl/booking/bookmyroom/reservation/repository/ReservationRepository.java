@@ -10,12 +10,12 @@ import java.util.List;
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Integer> {
 
-    @Query(value = "SELECT r FROM Reservation r WHERE r.roomTypeId=roomTypeId")
+    @Query(value = "SELECT r FROM Reservation r WHERE r.roomTypeId=:roomTypeId")
     List<Reservation> findAllByRoomId(Integer roomTypeId);
 
-    @Query(value = "SELECT r FROM Reservation r WHERE r.userId=userId")
+    @Query(value = "SELECT r FROM Reservation r WHERE r.userId=:userId")
     List<Reservation> findAllByUserId(Integer userId);
 
-    @Query(value = "SELECT r FROM Reservation r WHERE r.hotelsId=hotelsId")
+    @Query(value = "SELECT r FROM Reservation r WHERE r.hotelsId=:hotelsId")
     List<Reservation> findAllByHotelsId(Integer hotelsId);
 }

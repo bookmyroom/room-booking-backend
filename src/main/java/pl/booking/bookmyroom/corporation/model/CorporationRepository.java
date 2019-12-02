@@ -10,6 +10,6 @@ import java.util.List;
 @Repository
 public interface CorporationRepository extends JpaRepository<Corporation, Integer> {
 
-    @Query(value = "SELECT c FROM Corporation c WHERE c.email=email")
+    @Query(value = "SELECT c FROM Corporation c WHERE c.email=:email")
     public List<Corporation> findCorporationByEmail(@Email String email);
 }
