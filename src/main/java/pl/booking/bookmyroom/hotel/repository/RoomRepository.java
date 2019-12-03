@@ -10,6 +10,6 @@ import java.util.List;
 @Repository
 public interface RoomRepository extends JpaRepository<RoomType, Integer> {
 
-    @Query(value = "SELECT rt FROM RoomType rt WHERE rt.hotelId=hotelId")
+    @Query(value = "SELECT rt FROM RoomType rt WHERE rt.hotelId=:hotelId")
     List<RoomType> findByHotelsId(Integer hotelId);
 }
