@@ -11,36 +11,40 @@ import java.util.List;
 
 @Service
 public class UserService {
-    private final UserRepository repository;
+
+    @Autowired
+    private final UserRepository userRepository;
 
     @Autowired
     public UserService(UserRepository repository) {
-        this.repository = repository;
+        this.userRepository = repository;
     }
 
     public boolean createNewUser(UserRegistrationRequest request) {
-        if(repository.findAll().stream().anyMatch(u -> u.getEmail().equals(request.getEmail()))){
+        if(userRepository.findAll().stream().anyMatch(u -> u.getEmail().equals(request.getEmail()))){
             return false;
         }
         User user = new User();
+        user.setActive(true);
+        user.setRoles("USER");
         user.setEmail(request.getEmail());
         if(request.getPassword().equals(request.getPasswordValidCheck())){
             user.setPassword(request.getPassword());
         } else {
             return false;
         }
-        repository.save(user);
+        userRepository.save(user);
         return true;
     }
 
     public boolean tryLogIn(UserLogInRequest request) {
-        return repository.findAll()
+        return userRepository.findAll()
                 .stream()
                 .filter(u -> u.getEmail().equals(request.getEmail()))
                 .allMatch(u -> u.getPassword().equals(request.getPassword()));
     }
 
     public List<User> getAllUsers() {
-        return repository.findAll();
+        return userRepository.findAll();
     }
 }
