@@ -1,6 +1,7 @@
 package pl.booking.bookmyroom.user.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import pl.booking.bookmyroom.user.model.User;
 import pl.booking.bookmyroom.user.model.UserLogInRequest;
@@ -16,6 +17,9 @@ public class UserService {
     private final UserRepository userRepository;
 
     @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Autowired
     public UserService(UserRepository repository) {
         this.userRepository = repository;
     }
@@ -29,7 +33,8 @@ public class UserService {
         user.setRoles("USER");
         user.setEmail(request.getEmail());
         if(request.getPassword().equals(request.getPasswordValidCheck())){
-            user.setPassword(request.getPassword());
+            String encodedPassword = bCryptPasswordEncoder.encode(request.getPassword());
+            user.setPassword(encodedPassword);
         } else {
             return false;
         }
@@ -41,7 +46,7 @@ public class UserService {
         return userRepository.findAll()
                 .stream()
                 .filter(u -> u.getEmail().equals(request.getEmail()))
-                .allMatch(u -> u.getPassword().equals(request.getPassword()));
+                .allMatch(u -> bCryptPasswordEncoder.matches(request.getPassword(), u.getPassword()));
     }
 
     public List<User> getAllUsers() {
