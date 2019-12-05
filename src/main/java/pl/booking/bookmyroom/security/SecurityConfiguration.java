@@ -42,7 +42,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/corporations/register").permitAll()
                 .antMatchers(HttpMethod.POST, "/corporations/login").permitAll()
                 .antMatchers(HttpMethod.GET, "/corporations/all").permitAll()
-                .antMatchers("/").permitAll()
+                .antMatchers("/**").permitAll()
                 .and()
                 .logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                 .logoutSuccessUrl("/")

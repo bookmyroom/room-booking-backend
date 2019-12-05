@@ -23,6 +23,12 @@ public class UserController {
         this.userService = userService;
     }
 
+    @GetMapping(value = "/")
+    @ResponseStatus(code = HttpStatus.OK)
+    public String mainPage() {
+        return "<h1> Book a Room! </h1>";
+    }
+
     @PostMapping(value = "/register")
     @ResponseStatus(code = HttpStatus.CREATED)
     public ResponseEntity<String> registerNewUser (@RequestBody @Valid UserRegistrationRequest request){
