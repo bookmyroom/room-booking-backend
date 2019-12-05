@@ -9,6 +9,7 @@ import pl.booking.bookmyroom.user.model.UserLogInRequest;
 import pl.booking.bookmyroom.user.model.UserRegistrationRequest;
 import pl.booking.bookmyroom.user.service.UserService;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -23,6 +24,12 @@ public class UserController {
         this.userService = userService;
     }
 
+    @GetMapping(value = "/")
+    @ResponseStatus(code = HttpStatus.OK)
+    public String mainPage() {
+        return "<h1> Book a Room! </h1>";
+    }
+
     @PostMapping(value = "/register")
     @ResponseStatus(code = HttpStatus.CREATED)
     public ResponseEntity<String> registerNewUser (@RequestBody @Valid UserRegistrationRequest request){
@@ -34,8 +41,8 @@ public class UserController {
 
     @PostMapping(value = "/login")
     @ResponseStatus(code = HttpStatus.OK)
-    public ResponseEntity<String> tryLogIn(@RequestBody@Valid UserLogInRequest request){
-        if(!userService.tryLogIn(request))
+    public ResponseEntity<String> tryLogIn(HttpServletRequest sReq, @RequestBody@Valid UserLogInRequest request){
+        if(!userService.tryLogIn(sReq, request))
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         else
             return new ResponseEntity<>(HttpStatus.OK);

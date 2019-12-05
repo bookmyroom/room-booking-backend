@@ -33,7 +33,7 @@ public class CorporationController {
             return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("login")
+    @PostMapping("/login")
     @ResponseStatus(code = HttpStatus.OK)
     public ResponseEntity<String> loginCorporation(@RequestBody @Valid LoginCorporationRequest request){
         if(!corporationService.loginCorporation(request))

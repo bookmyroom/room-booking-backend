@@ -58,7 +58,7 @@ public class HotelController {
 
     @GetMapping("query")
     @ResponseStatus(code = HttpStatus.OK)
-    public List<GetHotelResponse> findHotelsBySearchQuery(@RequestParam String city,
+    public List<Hotel> findHotelsBySearchQuery(@RequestParam String city,
                                                @RequestParam(required = false) @Valid @Min(1) @Max(5) Integer hotelStandard,
                                                @RequestParam(required = false) Float priceMin,
                                                @RequestParam(required = false) Float priceMax,
