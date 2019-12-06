@@ -4,11 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.booking.bookmyroom.security.model.LoginStatus;
 import pl.booking.bookmyroom.user.model.User;
 import pl.booking.bookmyroom.user.model.UserLogInRequest;
 import pl.booking.bookmyroom.user.model.UserRegistrationRequest;
 import pl.booking.bookmyroom.user.service.UserService;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -16,11 +18,21 @@ import java.util.List;
 @RequestMapping("/user")
 @CrossOrigin
 public class UserController {
+
+    @Autowired
+    LoginStatus loginStatus;
+
     private final UserService userService;
 
     @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
+    }
+
+    @GetMapping(value = "/")
+    @ResponseStatus(code = HttpStatus.OK)
+    public String mainPage() {
+        return "<h1> Book a Room! </h1>";
     }
 
     @PostMapping(value = "/register")
@@ -34,11 +46,14 @@ public class UserController {
 
     @PostMapping(value = "/login")
     @ResponseStatus(code = HttpStatus.OK)
-    public ResponseEntity<String> tryLogIn(@RequestBody@Valid UserLogInRequest request){
-        if(!userService.tryLogIn(request))
+    public ResponseEntity<String> tryLogIn(HttpServletRequest sReq, @RequestBody@Valid UserLogInRequest request){
+        if(!userService.tryLogIn(sReq, request))
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        else
+        else {
+            loginStatus.setLoggedIn(true);
+            loginStatus.setUsername(request.getEmail());
             return new ResponseEntity<>(HttpStatus.OK);
+        }
     }
 
     //TODO remove this before release

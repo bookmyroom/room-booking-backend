@@ -23,4 +23,7 @@ public class Corporation {
 
     @Email
     private String email;
+
+    private boolean active;
+    private String roles;
 }
