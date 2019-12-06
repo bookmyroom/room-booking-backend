@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.booking.bookmyroom.security.model.LoginStatus;
 import pl.booking.bookmyroom.user.model.User;
 import pl.booking.bookmyroom.user.model.UserLogInRequest;
 import pl.booking.bookmyroom.user.model.UserRegistrationRequest;
@@ -17,6 +18,10 @@ import java.util.List;
 @RequestMapping("/user")
 @CrossOrigin
 public class UserController {
+
+    @Autowired
+    LoginStatus loginStatus;
+
     private final UserService userService;
 
     @Autowired
@@ -44,8 +49,11 @@ public class UserController {
     public ResponseEntity<String> tryLogIn(HttpServletRequest sReq, @RequestBody@Valid UserLogInRequest request){
         if(!userService.tryLogIn(sReq, request))
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        else
+        else {
+            loginStatus.setLoggedIn(true);
+            loginStatus.setUsername(request.getEmail());
             return new ResponseEntity<>(HttpStatus.OK);
+        }
     }
 
     //TODO remove this before release

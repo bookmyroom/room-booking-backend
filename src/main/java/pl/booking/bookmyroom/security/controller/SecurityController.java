@@ -1,16 +1,29 @@
 package pl.booking.bookmyroom.security.controller;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import pl.booking.bookmyroom.security.model.LoginStatus;
 
 @RestController
 @CrossOrigin
 public class SecurityController {
 
-    @GetMapping(value = "/")
-    public String loggedOut() {
-        return "<div>Logged out</div>";
+    @Autowired
+    LoginStatus loginStatus;
+
+    @GetMapping(value = "/logout")
+    @ResponseStatus(code = HttpStatus.OK)
+    public String logout() {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if(auth.getName().equals("anonymousUser")) {
+            loginStatus.setLoggedIn(false);
+            loginStatus.setUsername("logged out");
+            return "Logged out";
+        } else return "Didn't log out";
     }
 
     @GetMapping(value = "/logged")
@@ -20,7 +33,8 @@ public class SecurityController {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if(auth.getPrincipal() != null) {
-            return auth.getName();
+            System.out.println(auth.toString());
+            return loginStatus.getUsername();
         }
         else return "Not logged in Prince";
     }

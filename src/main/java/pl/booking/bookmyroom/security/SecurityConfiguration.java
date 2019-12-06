@@ -10,19 +10,10 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.security.web.authentication.logout.DelegatingLogoutSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import pl.booking.bookmyroom.user.model.User;
 
-import java.util.ArrayList;
-import java.util.List;
 
 @EnableWebSecurity
 @Configuration
@@ -59,23 +50,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/corporations/login").permitAll()
                 .antMatchers(HttpMethod.GET, "/corporations/all").permitAll()
                 .antMatchers("/logged").permitAll()
-                .antMatchers("/").permitAll().anyRequest().authenticated()
-                .and()
-                .formLogin().successForwardUrl("/").failureForwardUrl("/error").permitAll()
+                .antMatchers("/**").permitAll()
+                .anyRequest().authenticated()
                 .and().httpBasic()
                 .and()
-                .logout().invalidateHttpSession(true)
-                .clearAuthentication(true)
+                .logout()
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                 .logoutSuccessUrl("/").permitAll();
-
     }
 
     @Bean
     public BCryptPasswordEncoder getPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-
-
 }

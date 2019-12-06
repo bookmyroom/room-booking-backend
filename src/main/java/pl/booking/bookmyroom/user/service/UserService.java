@@ -2,6 +2,7 @@ package pl.booking.bookmyroom.user.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -43,6 +44,11 @@ public class UserService {
         if(userRepository.findAll().stream().anyMatch(u -> u.getEmail().equals(request.getEmail()))){
             return false;
         }
+
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+                request.getEmail(),
+                request.getPassword());
+
         User user = new User();
         user.setActive(true);
         user.setRoles("USER");
@@ -53,6 +59,17 @@ public class UserService {
         } else {
             return false;
         }
+
+        token.setDetails(user);
+
+        try {
+            Authentication auth = authManager.authenticate(token);
+            SecurityContextHolder.getContext().setAuthentication(auth);
+
+        } catch (BadCredentialsException e) {
+            System.out.println("error");
+        }
+
         userRepository.save(user);
         return true;
     }
