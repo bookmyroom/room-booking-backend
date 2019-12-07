@@ -6,10 +6,7 @@ import pl.booking.bookmyroom.corporation.model.Corporation;
 import pl.booking.bookmyroom.hotel.model.*;
 import pl.booking.bookmyroom.hotel.repository.HotelRepository;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,6 +23,7 @@ public class HotelService {
 
     public void addHotel(CreateHotelRequest request) {
         Hotel hotel = new Hotel();
+        hotel.setName(request.getName());
         hotel.setCity(request.getCity());
         hotel.setStreet(request.getStreet());
         hotel.setStreetNumber(request.getStreetNumber());
@@ -71,21 +69,30 @@ public class HotelService {
         return hotelRepository.findByStandardAndCity(standard, city);
     }
 
-    public List<Hotel> findHotelsMatchingQuery(HotelSearchRequest request){
+    public List<Hotel> findHotelsMatchingQuery(String city,
+                                               Integer hotelStandard,
+                                               Float priceMin,
+                                               Float priceMax,
+                                               Integer numberOfBeds,
+                                               RoomStandard roomStandard,
+                                               Date start,
+                                               Date end){
         List<Hotel> searchResult;
 
-        if(request.getHotelStandard() != null){
-            searchResult = getHotelsByStandardAndCity(request.getHotelStandard(), request.getCity());
+        if(hotelStandard != null){
+            searchResult = getHotelsByStandardAndCity(hotelStandard, city);
         } else {
-            searchResult = getHotelsByCity(request.getCity());
+            searchResult = getHotelsByCity(city);
         }
 
         searchResult = searchResult.stream()
                 .filter(h -> roomService.anyRoomsMatchQuery(h.getId(),
-                        Optional.of(request.getNumberOfBeds()),
-                        Optional.of(request.getRoomStandard()),
-                        Optional.of(request.getPriceMin()),
-                        Optional.of(request.getPriceMax())))
+                        Optional.ofNullable(numberOfBeds),
+                        Optional.ofNullable(roomStandard),
+                        Optional.ofNullable(priceMin),
+                        Optional.ofNullable(priceMax),
+                        Optional.ofNullable(start),
+                        Optional.ofNullable(end)))
                 .collect(Collectors.toList());
 
         return searchResult;

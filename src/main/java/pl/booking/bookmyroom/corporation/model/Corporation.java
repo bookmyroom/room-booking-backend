@@ -24,4 +24,7 @@ public class Corporation {
     @Email
     @Column(unique = true)
     private String email;
+
+    private boolean active;
+    private String roles;
 }

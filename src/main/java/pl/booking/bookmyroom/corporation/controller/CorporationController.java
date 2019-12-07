@@ -9,6 +9,7 @@ import pl.booking.bookmyroom.corporation.model.CreateCorporationRequest;
 import pl.booking.bookmyroom.corporation.model.LoginCorporationRequest;
 import pl.booking.bookmyroom.corporation.service.CorporationService;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -33,10 +34,10 @@ public class CorporationController {
             return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("login")
+    @PostMapping("/login")
     @ResponseStatus(code = HttpStatus.OK)
-    public ResponseEntity<String> loginCorporation(@RequestBody @Valid LoginCorporationRequest request){
-        if(!corporationService.loginCorporation(request))
+    public ResponseEntity<String> loginCorporation(HttpServletRequest sReq, @RequestBody @Valid LoginCorporationRequest request){
+        if(!corporationService.loginCorporation(sReq, request))
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         else
             return new ResponseEntity<>(HttpStatus.OK);

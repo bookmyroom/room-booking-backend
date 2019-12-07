@@ -5,10 +5,13 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import java.util.Date;
 
 @Getter
 @NoArgsConstructor
 public class HotelSearchRequest {
+    @NotNull
     private String city;
 
     @Max(5)
@@ -20,4 +23,10 @@ public class HotelSearchRequest {
     private Integer numberOfBeds;
 
     private RoomStandard roomStandard;
+
+    @NotNull
+    private Date start;
+
+    @NotNull
+    private Date end;
 }
