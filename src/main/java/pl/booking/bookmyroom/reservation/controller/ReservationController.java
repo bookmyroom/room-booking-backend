@@ -64,7 +64,7 @@ public class ReservationController {
         return service.getCorporationReservations(corporationId);
     }
 
-    @PutMapping(value = "/status")
+    @PatchMapping(value = "/status")
     public ResponseEntity<String> changeReservationStatus(@RequestBody @Valid ChangeStatusRequest request){
         if(service.changeReservationStatus(request)){
             return new ResponseEntity<>(HttpStatus.OK);

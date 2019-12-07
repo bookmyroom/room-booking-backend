@@ -19,7 +19,11 @@ public class UserService {
     }
 
     public boolean createNewUser(UserRegistrationRequest request) {
+<<<<<<< Updated upstream
         if(repository.findAll().stream().anyMatch(u -> u.getEmail().equals(request.getEmail()))){
+=======
+        if(userRepository.findByEmail(request.getEmail()).stream().anyMatch(u -> u.getEmail().equals(request.getEmail()))){
+>>>>>>> Stashed changes
             return false;
         }
         User user = new User();

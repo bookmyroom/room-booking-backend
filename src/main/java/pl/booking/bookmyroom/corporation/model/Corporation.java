@@ -22,5 +22,6 @@ public class Corporation {
     private String password;
 
     @Email
+    @Column(unique = true)
     private String email;
 }
