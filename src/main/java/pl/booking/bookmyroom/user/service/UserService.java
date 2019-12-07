@@ -10,6 +10,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import pl.booking.bookmyroom.security.model.LoginStatus;
 import pl.booking.bookmyroom.user.model.User;
 import pl.booking.bookmyroom.user.model.UserLogInRequest;
 import pl.booking.bookmyroom.user.model.UserRegistrationRequest;
@@ -25,6 +26,9 @@ import static org.springframework.security.web.context.HttpSessionSecurityContex
 public class UserService {
 
     @Autowired
+    LoginStatus loginStatus;
+
+    @Autowired
     AuthenticationManager authManager;
 
     @Autowired
@@ -33,15 +37,13 @@ public class UserService {
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    private Object loggedInUser = new Object();
-
     @Autowired
     public UserService(UserRepository repository) {
         this.userRepository = repository;
     }
 
     public boolean createNewUser(UserRegistrationRequest request) {
-        if(userRepository.findAll().stream().anyMatch(u -> u.getEmail().equals(request.getEmail()))){
+        if(!userRepository.findByEmail(request.getEmail()).isEmpty()) {
             return false;
         }
 
@@ -75,9 +77,8 @@ public class UserService {
     }
 
     public boolean tryLogIn(HttpServletRequest sReq, UserLogInRequest request) {
-        if(userRepository.findAll()
+        if(userRepository.findByEmail(request.getEmail())
                 .stream()
-                .filter(u -> u.getEmail().equals(request.getEmail()))
                 .allMatch(u -> bCryptPasswordEncoder.matches(request.getPassword(), u.getPassword())))
         {
             UsernamePasswordAuthenticationToken authReq =
@@ -89,6 +90,11 @@ public class UserService {
             HttpSession session = sReq.getSession(true);
             session.setAttribute(SPRING_SECURITY_CONTEXT_KEY, sc);
 
+            loginStatus.setLoggedIn(true);
+            loginStatus.setUsername(request.getEmail());
+
+            userRepository.findByEmail(request.getEmail()).forEach(u -> loginStatus.setUserId(u.getId()));
+            userRepository.findByEmail(request.getEmail()).forEach(u -> loginStatus.setUserType(u.getRoles()));
             return true;
         } else return false;
     }
