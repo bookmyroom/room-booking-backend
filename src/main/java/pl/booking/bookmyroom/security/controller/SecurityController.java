@@ -29,13 +29,13 @@ public class SecurityController {
     @GetMapping(value = "/logged")
     @ResponseStatus(code = HttpStatus.OK)
     @ResponseBody
-    public String logged() {
+    public LoginStatus logged() {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if(auth.getPrincipal() != null) {
             System.out.println(auth.toString());
-            return loginStatus.getUsername();
+            return loginStatus;
         }
-        else return "Not logged in Prince";
+        else return null;
     }
 }
