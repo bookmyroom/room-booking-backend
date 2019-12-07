@@ -69,7 +69,7 @@ public class HotelService {
         return hotelRepository.findByStandardAndCity(standard, city);
     }
 
-    public List<Hotel> findHotelsMatchingQuery(String city,
+    public List<GetHotelResponse> findHotelsMatchingQuery(String city,
                                                Integer hotelStandard,
                                                Float priceMin,
                                                Float priceMax,
@@ -77,16 +77,24 @@ public class HotelService {
                                                RoomStandard roomStandard,
                                                Date start,
                                                Date end){
-        List<Hotel> searchResult;
+        List<GetHotelResponse> searchResult = new ArrayList<>();
 
         if(hotelStandard != null){
-            searchResult = getHotelsByStandardAndCity(hotelStandard, city);
+            for (Hotel h : getHotelsByStandardAndCity(hotelStandard, city)){
+                GetHotelResponse r = new GetHotelResponse();
+                r.setHotel(h);
+                searchResult.add(r);
+            }
         } else {
-            searchResult = getHotelsByCity(city);
+            for (Hotel h : getHotelsByCity(city)){
+                GetHotelResponse r = new GetHotelResponse();
+                r.setHotel(h);
+                searchResult.add(r);
+            }
         }
 
         searchResult = searchResult.stream()
-                .filter(h -> roomService.anyRoomsMatchQuery(h.getId(),
+                .filter(r -> roomService.anyRoomsMatchQuery(r.getHotel().getId(),
                         Optional.ofNullable(numberOfBeds),
                         Optional.ofNullable(roomStandard),
                         Optional.ofNullable(priceMin),
@@ -94,6 +102,8 @@ public class HotelService {
                         Optional.ofNullable(start),
                         Optional.ofNullable(end)))
                 .collect(Collectors.toList());
+
+        searchResult.forEach(r -> r.setHotelRoomTypes(roomService.getRoomTypesByHotelsId(r.getHotel().getId())));
 
         return searchResult;
     }
