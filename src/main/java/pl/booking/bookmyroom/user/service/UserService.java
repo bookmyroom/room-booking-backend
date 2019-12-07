@@ -89,7 +89,12 @@ public class UserService {
             sc.setAuthentication(auth);
             HttpSession session = sReq.getSession(true);
             session.setAttribute(SPRING_SECURITY_CONTEXT_KEY, sc);
+
+            loginStatus.setLoggedIn(true);
+            loginStatus.setUsername(request.getEmail());
+
             userRepository.findByEmail(request.getEmail()).forEach(u -> loginStatus.setUserId(u.getId()));
+            userRepository.findByEmail(request.getEmail()).forEach(u -> loginStatus.setUserType(u.getRoles()));
             return true;
         } else return false;
     }

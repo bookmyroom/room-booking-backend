@@ -1,17 +1,33 @@
 package pl.booking.bookmyroom.corporation.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import pl.booking.bookmyroom.corporation.model.Corporation;
 import pl.booking.bookmyroom.corporation.model.CreateCorporationRequest;
 import pl.booking.bookmyroom.corporation.model.CorporationRepository;
 import pl.booking.bookmyroom.corporation.model.LoginCorporationRequest;
+import pl.booking.bookmyroom.security.model.LoginStatus;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.List;
+
+import static org.springframework.security.web.context.HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY;
 
 @Service
 public class CorporationService {
+
+    @Autowired
+    AuthenticationManager authManager;
+
+    @Autowired
+    LoginStatus loginStatus;
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -36,14 +52,31 @@ public class CorporationService {
                 return false;
             }
             corporation.setEmail(request.getEmail());
+            corporation.setRoles("CORPO");
             corporationRepository.save(corporation);
             return true;
         }
     }
 
-    public boolean loginCorporation(LoginCorporationRequest request) {
-        return getCorporationByEmail(request.getEmail()).stream()
-                .anyMatch(c -> bCryptPasswordEncoder.matches(request.getPassword(), c.getPassword()));
+    public boolean loginCorporation(HttpServletRequest sReq, LoginCorporationRequest request) {
+        if(getCorporationByEmail(request.getEmail()).stream()
+                .anyMatch(c -> bCryptPasswordEncoder.matches(request.getPassword(), c.getPassword()))) {
+
+            UsernamePasswordAuthenticationToken authReq =
+                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
+            Authentication auth = authManager.authenticate(authReq);
+
+            SecurityContext sc = SecurityContextHolder.getContext();
+            sc.setAuthentication(auth);
+            HttpSession session = sReq.getSession(true);
+            session.setAttribute(SPRING_SECURITY_CONTEXT_KEY, sc);
+
+            loginStatus.setLoggedIn(true);
+            loginStatus.setUsername(request.getEmail());
+            corporationRepository.findByEmail(request.getEmail()).forEach(u -> loginStatus.setUserId(u.getId()));
+            corporationRepository.findByEmail(request.getEmail()).forEach(u -> loginStatus.setUserType(u.getRoles()));
+            return true;
+        } else return false;
     }
 
     public List<Corporation> getAllCorporations(){

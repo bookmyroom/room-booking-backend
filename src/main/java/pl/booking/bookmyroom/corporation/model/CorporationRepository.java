@@ -15,5 +15,5 @@ public interface CorporationRepository extends JpaRepository<Corporation, Intege
     @Query(value = "SELECT c FROM Corporation c WHERE c.email=:email")
     public List<Corporation> findCorporationByEmail(@Email String email);
 
-    Optional<User> findByEmail(String userName);
+    List<Corporation> findByEmail(String userName);
 }

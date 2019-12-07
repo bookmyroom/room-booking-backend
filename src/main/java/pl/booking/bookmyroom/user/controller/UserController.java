@@ -50,8 +50,7 @@ public class UserController {
         if(!userService.tryLogIn(sReq, request))
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         else {
-            loginStatus.setLoggedIn(true);
-            loginStatus.setUsername(request.getEmail());
+
             return new ResponseEntity<>(HttpStatus.OK);
         }
     }
