@@ -15,6 +15,9 @@ public class CreateHotelRequest {
     private String city;
 
     @NotNull
+    private String name;
+
+    @NotNull
     private String street;
 
     @NotNull
