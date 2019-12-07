@@ -10,13 +10,16 @@ public class LoginStatus {
 
     public static final LoginStatus INSTANCE = new LoginStatus();
 
+    private Integer userId;
     private boolean loggedIn;
     private String userType;
-    private Integer userId;
+
     private String username;
 
     private LoginStatus() {
         loggedIn = false;
         username = "none";
+        userId = 0;
+        userType = "ANON";
     }
 }
