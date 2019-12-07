@@ -23,6 +23,7 @@ public class HotelService {
 
     public void addHotel(CreateHotelRequest request) {
         Hotel hotel = new Hotel();
+        hotel.setName(request.getName());
         hotel.setCity(request.getCity());
         hotel.setStreet(request.getStreet());
         hotel.setStreetNumber(request.getStreetNumber());
