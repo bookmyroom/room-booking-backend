@@ -7,12 +7,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import pl.booking.bookmyroom.security.model.MyUserDetails;
 import pl.booking.bookmyroom.user.model.User;
 import pl.booking.bookmyroom.user.repository.UserRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class MyUserDetailService implements UserDetailsService {
@@ -22,7 +20,9 @@ public class MyUserDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(userName).get(0);
+        User user = null;
+        if(!userRepository.findByEmail(userName).isEmpty())
+            user = userRepository.findByEmail(userName).get(0);
 
         if(user == null)
             throw new UsernameNotFoundException("Not found" + userName);

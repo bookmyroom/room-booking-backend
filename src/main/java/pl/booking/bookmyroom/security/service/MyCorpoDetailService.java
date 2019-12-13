@@ -1,5 +1,6 @@
 package pl.booking.bookmyroom.security.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,11 +20,14 @@ import java.util.Optional;
 @Service
 public class MyCorpoDetailService implements UserDetailsService {
 
+    @Autowired
     CorporationRepository corporationRepository;
 
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
-        Corporation user = corporationRepository.findByEmail(userName).get(0);
+        Corporation user = null;
+        if(!corporationRepository.findByEmail(userName).isEmpty())
+            user = corporationRepository.findByEmail(userName).get(0);
 
         if(user == null)
             throw new UsernameNotFoundException("Not found" + userName);

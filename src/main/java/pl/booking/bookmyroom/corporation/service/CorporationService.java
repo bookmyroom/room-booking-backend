@@ -2,6 +2,7 @@ package pl.booking.bookmyroom.corporation.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -43,6 +44,11 @@ public class CorporationService {
         if(!getCorporationByEmail(request.getEmail()).isEmpty()) {
             return false;
         } else {
+            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+                    request.getEmail(),
+                    request.getPassword());
+
+
             Corporation corporation = new Corporation();
             corporation.setName(request.getName());
             if(request.getPassword().equals(request.getRepeatedPassword())) {
@@ -51,8 +57,20 @@ public class CorporationService {
             } else {
                 return false;
             }
+
             corporation.setEmail(request.getEmail());
             corporation.setRoles("CORPO");
+
+            token.setDetails(corporation);
+
+            try {
+                Authentication auth = authManager.authenticate(token);
+                SecurityContextHolder.getContext().setAuthentication(auth);
+
+            } catch (BadCredentialsException e) {
+                System.out.println("error");
+            }
+
             corporationRepository.save(corporation);
             return true;
         }
@@ -62,14 +80,15 @@ public class CorporationService {
         if(getCorporationByEmail(request.getEmail()).stream()
                 .anyMatch(c -> bCryptPasswordEncoder.matches(request.getPassword(), c.getPassword()))) {
 
-            UsernamePasswordAuthenticationToken authReq =
-                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
-            Authentication auth = authManager.authenticate(authReq);
-
-            SecurityContext sc = SecurityContextHolder.getContext();
-            sc.setAuthentication(auth);
-            HttpSession session = sReq.getSession(true);
-            session.setAttribute(SPRING_SECURITY_CONTEXT_KEY, sc);
+//            UsernamePasswordAuthenticationToken authReq =
+//                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
+//            Authentication auth = authManager.authenticate(authReq);
+//            if(!authReq.isAuthenticated()) return false;
+//
+//            SecurityContext sc = SecurityContextHolder.getContext();
+//            sc.setAuthentication(auth);
+//            HttpSession session = sReq.getSession(true);
+//            session.setAttribute(SPRING_SECURITY_CONTEXT_KEY, sc);
 
             loginStatus.setLoggedIn(true);
             loginStatus.setUsername(request.getEmail());

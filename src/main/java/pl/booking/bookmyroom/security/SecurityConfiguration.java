@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -19,20 +21,18 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Configuration
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
+    public SecurityConfiguration(@Qualifier("myUserDetailService") UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
+
     @Bean
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
 
-    @Qualifier("myUserDetailService")
-    @Autowired
+    final
     UserDetailsService userDetailsService;
-
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService);
-    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -40,11 +40,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/admin").hasRole("ADMIN")
-                .antMatchers(HttpMethod.POST, "/user/register").permitAll()
-                .antMatchers(HttpMethod.POST, "/user/login").permitAll()
-                .antMatchers(HttpMethod.GET, "/user/all").permitAll()
-                .antMatchers(HttpMethod.POST, "/corporations").permitAll()
                 .antMatchers("/hotels").permitAll()
+                .antMatchers(HttpMethod.POST, "/corporations/register").permitAll()
+                .antMatchers(HttpMethod.POST, "/corporations/login").permitAll()
+                .antMatchers(HttpMethod.GET, "/corporations/all").permitAll()
                 .antMatchers(HttpMethod.POST, "/reservation").permitAll()
                 .antMatchers(HttpMethod.POST, "/corporations/register").permitAll()
                 .antMatchers(HttpMethod.POST, "/corporations/login").permitAll()
@@ -58,6 +57,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .logout()
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                 .logoutSuccessUrl("/").permitAll();
+    }
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService);
     }
 
     @Bean

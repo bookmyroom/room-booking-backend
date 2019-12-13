@@ -81,14 +81,14 @@ public class UserService {
                 .stream()
                 .allMatch(u -> bCryptPasswordEncoder.matches(request.getPassword(), u.getPassword())))
         {
-            UsernamePasswordAuthenticationToken authReq =
-                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
-            Authentication auth = authManager.authenticate(authReq);
-
-            SecurityContext sc = SecurityContextHolder.getContext();
-            sc.setAuthentication(auth);
-            HttpSession session = sReq.getSession(true);
-            session.setAttribute(SPRING_SECURITY_CONTEXT_KEY, sc);
+//            UsernamePasswordAuthenticationToken authReq =
+//                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
+//            Authentication auth = authManager.authenticate(authReq);
+//
+//            SecurityContext sc = SecurityContextHolder.getContext();
+//            sc.setAuthentication(auth);
+//            HttpSession session = sReq.getSession(true);
+//            session.setAttribute(SPRING_SECURITY_CONTEXT_KEY, sc);
 
             loginStatus.setLoggedIn(true);
             loginStatus.setUsername(request.getEmail());
