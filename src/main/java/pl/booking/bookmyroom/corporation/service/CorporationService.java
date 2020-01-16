@@ -14,6 +14,7 @@ import pl.booking.bookmyroom.corporation.model.CreateCorporationRequest;
 import pl.booking.bookmyroom.corporation.model.CorporationRepository;
 import pl.booking.bookmyroom.corporation.model.LoginCorporationRequest;
 import pl.booking.bookmyroom.security.model.LoginStatus;
+import pl.booking.bookmyroom.user.model.User;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -80,15 +81,26 @@ public class CorporationService {
         if(getCorporationByEmail(request.getEmail()).stream()
                 .anyMatch(c -> bCryptPasswordEncoder.matches(request.getPassword(), c.getPassword()))) {
 
-//            UsernamePasswordAuthenticationToken authReq =
-//                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
-//            Authentication auth = authManager.authenticate(authReq);
-//            if(!authReq.isAuthenticated()) return false;
-//
-//            SecurityContext sc = SecurityContextHolder.getContext();
-//            sc.setAuthentication(auth);
-//            HttpSession session = sReq.getSession(true);
-//            session.setAttribute(SPRING_SECURITY_CONTEXT_KEY, sc);
+            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+                    request.getEmail(),
+                    request.getPassword());
+
+            Corporation user = new Corporation();
+            user.setRoles("CORPO");
+            user.setActive(true);
+            user.setEmail(request.getEmail());
+            user.setPassword(request.getPassword());
+
+
+            token.setDetails(user);
+
+            try {
+                Authentication auth = authManager.authenticate(token);
+                SecurityContextHolder.getContext().setAuthentication(auth);
+
+            } catch (BadCredentialsException e) {
+                System.out.println("error");
+            }
 
             loginStatus.setLoggedIn(true);
             loginStatus.setUsername(request.getEmail());

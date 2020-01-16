@@ -1,14 +1,20 @@
 package pl.booking.bookmyroom.security.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import pl.booking.bookmyroom.security.model.LoginStatus;
 
+
 @RestController
 @CrossOrigin
 public class SecurityController {
+
+    @Autowired
+    AuthenticationManager authenticationManager;
 
     @Autowired
     LoginStatus loginStatus;
@@ -31,9 +37,11 @@ public class SecurityController {
     @ResponseBody
     public LoginStatus logged() {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        SecurityContext sc = SecurityContextHolder.getContext();
+        System.out.println(sc.getAuthentication().getName());
+        Authentication auth = sc.getAuthentication();
         if(auth.getPrincipal() != null) {
-            System.out.println(auth.toString());
+            System.out.println(SecurityContextHolder.getContext().getAuthentication().toString());
             return loginStatus;
         }
         else return null;

@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import pl.booking.bookmyroom.security.model.LoginStatus;
+import pl.booking.bookmyroom.security.model.MyUserDetails;
 import pl.booking.bookmyroom.user.model.User;
 import pl.booking.bookmyroom.user.model.UserLogInRequest;
 import pl.booking.bookmyroom.user.model.UserRegistrationRequest;
@@ -47,9 +48,7 @@ public class UserService {
             return false;
         }
 
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-                request.getEmail(),
-                request.getPassword());
+
 
         User user = new User();
         user.setActive(true);
@@ -62,15 +61,6 @@ public class UserService {
             return false;
         }
 
-        token.setDetails(user);
-
-        try {
-            Authentication auth = authManager.authenticate(token);
-            SecurityContextHolder.getContext().setAuthentication(auth);
-
-        } catch (BadCredentialsException e) {
-            System.out.println("error");
-        }
 
         userRepository.save(user);
         return true;
@@ -81,14 +71,28 @@ public class UserService {
                 .stream()
                 .allMatch(u -> bCryptPasswordEncoder.matches(request.getPassword(), u.getPassword())))
         {
-//            UsernamePasswordAuthenticationToken authReq =
-//                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
-//            Authentication auth = authManager.authenticate(authReq);
-//
-//            SecurityContext sc = SecurityContextHolder.getContext();
-//            sc.setAuthentication(auth);
-//            HttpSession session = sReq.getSession(true);
-//            session.setAttribute(SPRING_SECURITY_CONTEXT_KEY, sc);
+
+            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+                    request.getEmail(),
+                    request.getPassword());
+
+            User user = new User();
+            user.setRoles("USER");
+            user.setActive(true);
+            user.setEmail(request.getEmail());
+            user.setPassword(request.getPassword());
+
+
+            token.setDetails(user);
+            System.out.println(token.getCredentials().toString());
+
+            try {
+                Authentication auth = authManager.authenticate(token);
+                SecurityContextHolder.getContext().setAuthentication(auth);
+
+            } catch (BadCredentialsException e) {
+                System.out.println("error");
+            }
 
             loginStatus.setLoggedIn(true);
             loginStatus.setUsername(request.getEmail());
