@@ -59,10 +59,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/logged").permitAll()
                 .antMatchers("/**").permitAll()
                 .anyRequest().authenticated()
-                .and().httpBasic()
-        .and().formLogin().loginPage("/user/login").permitAll();
-
-
+                .and().httpBasic();
         http
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
                 .maximumSessions(2);
