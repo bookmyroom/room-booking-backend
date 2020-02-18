@@ -7,7 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import pl.booking.bookmyroom.security.model.ActiveUserStore;
 import pl.booking.bookmyroom.security.model.LoginStatus;
 import pl.booking.bookmyroom.user.model.User;
 import pl.booking.bookmyroom.user.model.UserLogInRequest;
@@ -18,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Locale;
 
 import static org.springframework.security.web.context.HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY;
 
@@ -46,14 +49,14 @@ public class UserController {
     @ResponseStatus(code = HttpStatus.CREATED)
     public ResponseEntity<String> registerNewUser (@RequestBody @Valid UserRegistrationRequest request){
         if(!userService.createNewUser(request))
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
         else
             return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PostMapping(value = "/login")
     @ResponseStatus(code = HttpStatus.OK)
-    public ResponseEntity<String> tryLogIn(HttpServletRequest sReq, @RequestBody@Valid UserLogInRequest request){
+    public ResponseEntity<String> tryLogIn(HttpSession session, HttpServletRequest sReq, @RequestBody@Valid UserLogInRequest request){
         if(!userService.tryLogIn(sReq, request))
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         else {
@@ -68,5 +71,14 @@ public class UserController {
     @ResponseStatus(code = HttpStatus.OK)
     public List<User> getAllUsers(){
         return userService.getAllUsers();
+    }
+
+    @Autowired
+    ActiveUserStore activeUserStore;
+
+    @RequestMapping(value = "/loggedUsers", method = RequestMethod.GET)
+    public String getLoggedUsers(Locale locale, Model model) {
+        model.addAttribute("users", activeUserStore.getUsers());
+        return "users";
     }
 }

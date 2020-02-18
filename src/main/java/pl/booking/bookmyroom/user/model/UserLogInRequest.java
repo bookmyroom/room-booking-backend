@@ -9,12 +9,12 @@ import javax.validation.constraints.NotNull;
 public class UserLogInRequest {
     @NotNull
     @Email
-    private String email;
+    private String username;
     @NotNull
     private String password;
 
-    public UserLogInRequest(@NotNull @Email String email, @NotNull String password) {
-        this.email = email;
+    public UserLogInRequest(@NotNull @Email String username, @NotNull String password) {
+        this.username = username;
         this.password = password;
     }
 }

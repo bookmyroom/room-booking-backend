@@ -42,6 +42,9 @@ public class SecurityController {
         Authentication auth = sc.getAuthentication();
         if(auth.getPrincipal() != null) {
             System.out.println(SecurityContextHolder.getContext().getAuthentication().toString());
+            loginStatus.setLoggedIn(true);
+            loginStatus.setUsername(sc.getAuthentication().getName());
+            loginStatus.setUserType(sc.getAuthentication().getAuthorities().stream().findFirst().toString());
             return loginStatus;
         }
         else return null;

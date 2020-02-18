@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import pl.booking.bookmyroom.user.repository.UserRepository;
 
 @SpringBootApplication
-@EnableJpaRepositories
+@EnableJpaRepositories(basePackageClasses = UserRepository.class)
 public class BookmyroomApplication {
 
 	public static void main(String[] args) {

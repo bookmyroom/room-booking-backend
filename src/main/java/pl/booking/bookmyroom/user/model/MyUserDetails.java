@@ -1,30 +1,37 @@
-package pl.booking.bookmyroom.security.model;
+package pl.booking.bookmyroom.user.model;
 
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import pl.booking.bookmyroom.user.model.User;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
+@Getter@Setter
 public class MyUserDetails implements UserDetails {
 
-    private String email;
+    private String username;
     private String password;
-    private boolean active;
+    private boolean enabled;
     private List<GrantedAuthority> authorities;
 
+    public MyUserDetails() {
+        username = "user";
+        password = "pass";
+        enabled = true;
+    }
+
     public MyUserDetails(User user) {
-        this.email = user.getEmail();
+
+        this.username = user.getUsername();
         this.password = user.getPassword();
-        this.active = user.isActive();
-        this.authorities = Arrays.stream(user.getRoles().split(","))
+        this.enabled = user.isEnabled();
+        this.authorities = Arrays
+                .stream(user.getRoles().split(","))
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
     }
@@ -41,7 +48,7 @@ public class MyUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email;
+        return username;
     }
 
     @Override
@@ -61,6 +68,6 @@ public class MyUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return active;
+        return enabled;
     }
 }

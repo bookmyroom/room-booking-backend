@@ -14,13 +14,9 @@ import pl.booking.bookmyroom.corporation.model.CreateCorporationRequest;
 import pl.booking.bookmyroom.corporation.model.CorporationRepository;
 import pl.booking.bookmyroom.corporation.model.LoginCorporationRequest;
 import pl.booking.bookmyroom.security.model.LoginStatus;
-import pl.booking.bookmyroom.user.model.User;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.List;
-
-import static org.springframework.security.web.context.HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY;
 
 @Service
 public class CorporationService {

@@ -1,11 +1,8 @@
 package pl.booking.bookmyroom.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -15,30 +12,34 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import pl.booking.bookmyroom.security.model.ActiveUserStore;
 
 
 @EnableWebSecurity
 @Configuration
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    public SecurityConfiguration(@Qualifier("myUserDetailService") UserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
+    @Autowired
+    UserDetailsService userDetailsService;
+
+    @Bean
+    public ActiveUserStore activeUserStore(){
+        return new ActiveUserStore();
     }
-
-
-
 
     @Bean
     @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
+    protected AuthenticationManager authenticationManager() throws Exception {
+        return super.authenticationManager();
     }
 
-    final
-    UserDetailsService userDetailsService;
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth
+                .userDetailsService(userDetailsService)
+                .passwordEncoder(getPasswordEncoder());
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -47,22 +48,21 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/admin").hasRole("ADMIN")
                 .antMatchers("/hotels").permitAll()
+                .antMatchers(HttpMethod.POST, "/user/register").permitAll()
+                .antMatchers(HttpMethod.GET, "/user/all").permitAll()
                 .antMatchers(HttpMethod.POST, "/corporations/register").permitAll()
                 .antMatchers(HttpMethod.POST, "/corporations/login").permitAll()
                 .antMatchers(HttpMethod.GET, "/corporations/all").permitAll()
                 .antMatchers(HttpMethod.POST, "/reservation").permitAll()
-                .antMatchers(HttpMethod.POST, "/corporations/register").permitAll()
-                .antMatchers(HttpMethod.POST, "/corporations/login").permitAll()
-                .antMatchers(HttpMethod.GET, "/corporations/all").permitAll()
                 .antMatchers(HttpMethod.PATCH, "/reservations/status").permitAll()
+                .antMatchers(HttpMethod.GET, "/loggedUsers").permitAll()
                 .antMatchers("/logged").permitAll()
                 .antMatchers("/**").permitAll()
                 .anyRequest().authenticated()
                 .and().httpBasic()
-                .and()
-                .logout()
-                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                .logoutSuccessUrl("/").permitAll();
+        .and().formLogin().loginPage("/user/login").permitAll();
+
+
         http
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
                 .maximumSessions(2);
@@ -73,14 +73,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return new HttpSessionEventPublisher();
     }
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService);
-        auth.jdbcAuthentication();
-    }
-
     @Bean
     public BCryptPasswordEncoder getPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+
 }

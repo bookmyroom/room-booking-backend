@@ -4,103 +4,117 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import pl.booking.bookmyroom.security.model.LoginStatus;
-import pl.booking.bookmyroom.security.model.MyUserDetails;
 import pl.booking.bookmyroom.user.model.User;
 import pl.booking.bookmyroom.user.model.UserLogInRequest;
 import pl.booking.bookmyroom.user.model.UserRegistrationRequest;
 import pl.booking.bookmyroom.user.repository.UserRepository;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.List;
-
-import static org.springframework.security.web.context.HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY;
 
 @Service
 public class UserService {
 
     @Autowired
-    LoginStatus loginStatus;
+    private LoginStatus loginStatus;
 
     @Autowired
-    AuthenticationManager authManager;
+    private AuthenticationManager authManager;
 
     @Autowired
-    private final UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    @Autowired
-    public UserService(UserRepository repository) {
-        this.userRepository = repository;
-    }
 
     public boolean createNewUser(UserRegistrationRequest request) {
-        if(!userRepository.findByEmail(request.getEmail()).isEmpty()) {
+        if(userRepository.findByUsername(request.getUsername()).isPresent()) {
+            System.out.println("VVVVVVVVVVVVVVVVVVV");
             return false;
         }
 
-
-
         User user = new User();
-        user.setActive(true);
+        user.setEnabled(true);
         user.setRoles("USER");
-        user.setEmail(request.getEmail());
+        user.setUsername(request.getUsername());
         if(request.getPassword().equals(request.getPasswordValidCheck())){
             String encodedPassword = bCryptPasswordEncoder.encode(request.getPassword());
             user.setPassword(encodedPassword);
         } else {
+            System.out.println("AAAAAAAAAAAAAAA");
             return false;
         }
 
+        UsernamePasswordAuthenticationToken token =
+                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword());
+        token.setDetails(user);
 
+        try {
+            Authentication auth = authManager.authenticate(token);
+            SecurityContextHolder.getContext().setAuthentication(auth);
+
+        } catch (BadCredentialsException e) {
+            System.out.println("BadCredentialsException");
+        }
         userRepository.save(user);
         return true;
     }
 
     public boolean tryLogIn(HttpServletRequest sReq, UserLogInRequest request) {
-        if(userRepository.findByEmail(request.getEmail())
-                .stream()
-                .allMatch(u -> bCryptPasswordEncoder.matches(request.getPassword(), u.getPassword())))
+        if(userRepository.findByUsername(request.getUsername()).isPresent())
         {
+            System.out.println("User " + request.getUsername() + " found!");
+            if(bCryptPasswordEncoder.matches(
+                    request.getPassword(),
+                    userRepository.findByUsername(request.getUsername()).get().getPassword()
+            ))
+            {
+                UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+                        request.getUsername(),
+                        request.getPassword());
 
-            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-                    request.getEmail(),
-                    request.getPassword());
-
-            User user = new User();
-            user.setRoles("USER");
-            user.setActive(true);
-            user.setEmail(request.getEmail());
-            user.setPassword(request.getPassword());
+                System.out.println("Token created");
+                User user = new User();
+                user.setRoles("USER");
+                user.setEnabled(true);
+                user.setUsername(request.getUsername());
+                user.setPassword(request.getPassword());
 
 
-            token.setDetails(user);
-            System.out.println(token.getCredentials().toString());
+                token.setDetails(user);
+                System.out.println(token.getCredentials().toString());
 
-            try {
-                Authentication auth = authManager.authenticate(token);
-                SecurityContextHolder.getContext().setAuthentication(auth);
+                try {
+                    Authentication auth = authManager.authenticate(token);
+                    if(auth.isAuthenticated())
+                        SecurityContextHolder.getContext().setAuthentication(auth);
 
-            } catch (BadCredentialsException e) {
-                System.out.println("error");
+                } catch (BadCredentialsException e) {
+                    System.out.println("BadCredentials for user" + user.getUsername());
+                }
+
+                loginStatus.setLoggedIn(true);
+                loginStatus.setUsername(request.getUsername());
+
+                loginStatus.setUserId(userRepository.findByUsername(request.getUsername()).get().getId());
+                loginStatus.setUserType(userRepository.findByUsername(request.getUsername()).get().getRoles());
+
+                return true;
+            } else {
+                System.out.println("User " + request.getUsername() + " password dont match!");
+                return false;
             }
-
-            loginStatus.setLoggedIn(true);
-            loginStatus.setUsername(request.getEmail());
-
-            userRepository.findByEmail(request.getEmail()).forEach(u -> loginStatus.setUserId(u.getId()));
-            userRepository.findByEmail(request.getEmail()).forEach(u -> loginStatus.setUserType(u.getRoles()));
-            return true;
-        } else return false;
+        } else {
+            System.out.println("User " + request.getUsername() + " not found!");
+            return false;
+        }
+        //return false;
     }
 
     public List<User> getAllUsers() {
